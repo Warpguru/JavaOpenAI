@@ -59,7 +59,7 @@ The full set of configuration keys (leave a value empty if that feature is not a
 | `OPENAI_API_KEY` | all | *(none)* |
 | `OPENAI_MODEL` | `chat`, `stream`, `vision`, `embed` | `gpt-4o-mini` |
 | `OPENAI_EMBEDDING_MODEL` | `embed` | `text-embedding-3-small` |
-| `OPENAI_REASONING_MODEL` | `reason` | falls back to `OPENAI_MODEL` |
+| `OPENAI_REASONING_MODEL` | `reason` | `o4-mini` |
 | `OPENAI_TTS_MODEL` | `tts` | `tts-1` |
 | `OPENAI_STT_MODEL` | `stt` | `whisper-1` |
 | `OPENAI_IMAGE_MODEL` | `imagegen` | `dall-e-2` |
@@ -85,7 +85,7 @@ mvn clean install -DskipTests
 mvn test
 ```
 
-The uber-jar is produced at `target/JavaOpenAI-x.y.z.jar`. It contains all dependencies and is self-contained.
+The uber-jar is produced at `target/JavaOpenAI-1.0.0.jar`. It contains all dependencies and is self-contained.
 
 ---
 
@@ -94,7 +94,7 @@ The uber-jar is produced at `target/JavaOpenAI-x.y.z.jar`. It contains all depen
 All examples share the same launcher:
 
 ```cmd
-java -jar target/JavaOpenAI-x.y.z.jar <command>
+java -jar target/JavaOpenAI-1.0.0.jar <command>
 ```
 
 ---
@@ -102,7 +102,7 @@ java -jar target/JavaOpenAI-x.y.z.jar <command>
 ### `config` — Show resolved settings
 
 ```cmd
-java -jar target/JavaOpenAI-x.y.z.jar config
+java -jar target/JavaOpenAI-1.0.0.jar config
 ```
 
 Prints all resolved configuration values (API key masked). Run this first to verify your `config.properties` is loaded correctly before making any API calls.
@@ -112,7 +112,7 @@ Prints all resolved configuration values (API key masked). Run this first to ver
 ### `chat` — Synchronous chat completion
 
 ```cmd
-java -jar target/JavaOpenAI-x.y.z.jar chat
+java -jar target/JavaOpenAI-1.0.0.jar chat
 ```
 
 **What it does:** Sends a hardcoded question ("What is the capital of France?") to the model and prints the reply. Uses the blocking (synchronous) Chat Completions API — the full response arrives in one go.
@@ -133,7 +133,7 @@ sequenceDiagram
 ### `stream` — Streaming chat completion
 
 ```cmd
-java -jar target/JavaOpenAI-x.y.z.jar stream
+java -jar target/JavaOpenAI-1.0.0.jar stream
 ```
 
 **What it does:** Sends the same question but uses Server-Sent Events (SSE) streaming. Tokens appear one by one as they are generated, demonstrating how to build a real-time "typewriter" effect in a Java application.
@@ -157,7 +157,7 @@ sequenceDiagram
 ### `embed` — Embeddings and cosine similarity
 
 ```cmd
-java -jar target/JavaOpenAI-x.y.z.jar embed
+java -jar target/JavaOpenAI-1.0.0.jar embed
 ```
 
 **What it does:** Converts three sentences into embedding vectors and computes cosine similarity between them. Demonstrates that semantically related sentences are "closer" in vector space than unrelated ones.
@@ -178,8 +178,8 @@ graph LR
 ### `vision` — Multi-modal image + text
 
 ```cmd
-java -jar target/JavaOpenAI-x.y.z.jar vision
-java -jar target/JavaOpenAI-x.y.z.jar vision https://example.com/image.jpg
+java -jar target/JavaOpenAI-1.0.0.jar vision
+java -jar target/JavaOpenAI-1.0.0.jar vision https://example.com/image.jpg
 ```
 
 **What it does:** Downloads an image (default: a public Wikipedia PNG), encodes it as a Base64 data URL, and sends it alongside a text prompt asking the model to describe what it sees. Using Base64 ensures local servers — which cannot fetch external URLs themselves — also work.
@@ -191,7 +191,7 @@ sequenceDiagram
     participant API as Vision LLM
     App->>Web: HTTP GET image
     Web-->>App: image bytes
-    App->>App: Base64-encode → data:image/png;base64,...
+    App->>App: Base64-encode to data URL
     App->>API: POST /v1/chat/completions<br/>{image (base64) + text prompt}
     API-->>App: Description of the image
 ```
@@ -203,7 +203,7 @@ sequenceDiagram
 ### `reason` — Reasoning / chain-of-thought
 
 ```cmd
-java -jar target/JavaOpenAI-x.y.z.jar reason
+java -jar target/JavaOpenAI-1.0.0.jar reason
 ```
 
 **What it does:** Poses a classic word problem ("A farmer has 17 sheep. All but 9 die. How many are left?") and asks the model to show its step-by-step reasoning before giving the final answer. Reasoning-capable models (o1/o3/QwQ-style) produce an internal chain-of-thought before responding.
@@ -215,14 +215,14 @@ graph TD
     T --> A[Final answer: 9]
 ```
 
-> Set `OPENAI_REASONING_MODEL` — e.g. `qwq:latest` locally or `o4-mini` on OpenAI. Falls back to `OPENAI_MODEL` if not set.
+> Set `OPENAI_REASONING_MODEL` — e.g. `qwq:latest` locally or `o4-mini` on OpenAI. Defaults to `o4-mini` if not set.
 
 ---
 
 ### `tts` — Text-to-speech
 
 ```cmd
-java -jar target/JavaOpenAI-x.y.z.jar tts
+java -jar target/JavaOpenAI-1.0.0.jar tts
 ```
 
 **What it does:** Sends a short text string to the OpenAI Audio Speech endpoint and writes the synthesised speech to `output-speech.mp3` in the current directory.
@@ -243,7 +243,7 @@ sequenceDiagram
 ### `stt` — Speech-to-text (Whisper)
 
 ```cmd
-java -jar target/JavaOpenAI-x.y.z.jar stt
+java -jar target/JavaOpenAI-1.0.0.jar stt
 ```
 
 **What it does:** Downloads a short public-domain audio clip, sends it to the Whisper transcription endpoint, and prints the recognised text.
@@ -267,7 +267,7 @@ sequenceDiagram
 ### `imagegen` — Image generation (DALL·E)
 
 ```cmd
-java -jar target/JavaOpenAI-x.y.z.jar imagegen
+java -jar target/JavaOpenAI-1.0.0.jar imagegen
 ```
 
 **What it does:** Sends a text prompt ("A serene mountain lake at sunrise") to the DALL·E image generation endpoint and prints the URL of the generated image.
@@ -288,7 +288,7 @@ sequenceDiagram
 ### `moderate` — Content moderation
 
 ```cmd
-java -jar target/JavaOpenAI-x.y.z.jar moderate
+java -jar target/JavaOpenAI-1.0.0.jar moderate
 ```
 
 **What it does:** Sends two sentences (one benign, one borderline) through the moderation endpoint and prints which content categories were flagged. Useful for understanding how to integrate content safety checks into an application.
@@ -313,7 +313,7 @@ Integration tests load connection details from `src/test/resources/test.properti
 test.base.url=http://localhost:11434/v1
 test.api.key=local
 test.model=llama3.2:3b
-test.vision.model=llama3.2-vision:latest
+test.vision.model=          # leave blank to skip the vision test
 test.reasoning.model=          # leave blank to skip the reasoning test
 test.audio.enabled=false       # set true for OpenAI cloud
 test.image.generation.enabled=false
@@ -329,7 +329,7 @@ mvn test
 Run a single test method:
 
 ```cmd
-mvn test -Dtest=OllamaIntegrationTest#chat_completionReturnsNonEmptyReply
+mvn test -Dtest=JavaOpenAIIntegrationTest#chat_completionReturnsNonEmptyReply
 ```
 
 ---
@@ -402,32 +402,33 @@ For any of these, create a `config.properties` based on `config.properties.examp
 
 ```
 src/main/java/edu/java/
-├── JavaOpenAI.java               # Entry point — command dispatcher
-├── Config.java                   # Config loader (env vars → config.properties → defaults)
-├── ClientFactory.java            # Builds the OpenAIClient
+├── JavaOpenAI.java                      # Entry point — command dispatcher
+├── api/
+│   ├── Config.java                      # Config loader (env vars → config.properties → defaults)
+│   └── ClientFactory.java               # Builds the OpenAIClient
 ├── examples/
-│   ├── ChatExample.java          # Synchronous chat completion
-│   ├── StreamingExample.java     # Streaming (SSE) chat completion
-│   ├── EmbeddingsExample.java    # Embeddings + cosine similarity
-│   ├── VisionExample.java        # Multi-modal vision (Base64 image)
-│   ├── ReasoningExample.java     # Reasoning / chain-of-thought
-│   ├── AudioSpeechExample.java   # Text-to-speech (TTS)
-│   ├── AudioTranscriptionExample.java  # Speech-to-text (Whisper)
-│   ├── ImageGenerationExample.java     # Image generation (DALL·E)
-│   └── ModerationExample.java    # Content moderation
+│   ├── ChatExample.java                 # Synchronous chat completion
+│   ├── StreamingExample.java            # Streaming (SSE) chat completion
+│   ├── EmbeddingsExample.java           # Embeddings + cosine similarity
+│   ├── VisionExample.java               # Multi-modal vision (Base64 image)
+│   ├── ReasoningExample.java            # Reasoning / chain-of-thought
+│   ├── AudioSpeechExample.java          # Text-to-speech (TTS)
+│   ├── AudioTranscriptionExample.java   # Speech-to-text (Whisper)
+│   ├── ImageGenerationExample.java      # Image generation (DALL·E)
+│   └── ModerationExample.java           # Content moderation
 └── util/
-    └── MathUtils.java            # Cosine similarity helper
+    └── MathUtils.java                   # Cosine similarity helper
 
 src/main/resources/
-├── log4j2.xml                    # Logging configuration
-├── config.properties.example     # Generic configuration template
-├── config.properties.openai      # Ready-to-use OpenAI cloud template
-├── config.properties.ollama      # Ready-to-use Ollama local template
-└── config.properties.lmstudio   # Ready-to-use LM Studio local template
+├── log4j2.xml                           # Logging configuration
+├── config.properties.example            # Generic configuration template
+├── config.properties.openai             # Ready-to-use OpenAI cloud template
+├── config.properties.ollama             # Ready-to-use Ollama local template
+└── config.properties.lmstudio          # Ready-to-use LM Studio local template
 
 src/test/java/edu/java/
-├── OllamaIntegrationTest.java    # Integration tests
-└── TestConfig.java               # Loads test.properties for tests
+├── JavaOpenAIIntegrationTest.java       # Integration tests
+└── TestConfig.java                      # Loads test.properties for tests
 ```
 
 ---
