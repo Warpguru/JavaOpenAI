@@ -1,0 +1,48 @@
+# Test configuration for JavaOpenAIIntegrationTest.
+#
+# USAGE:
+#   Copy this file to src/test/resources/test.properties and fill in the values
+#   for the LLM API provider you want to test against.
+#   This file (test.properties) is gitignored — never commit it.
+#
+# SUPPORTED PROVIDERS (examples):
+#   Ollama (local):     http://localhost:11434/v1   — any non-empty string for api.key
+#   LM Studio (local):  http://localhost:1234/v1    — any non-empty string for api.key
+#   OpenAI (cloud):     https://api.openai.com/v1   — your real sk-... key
+#   Any OpenAI-compatible provider: set the appropriate base URL and key
+#
+# NOTE: The models listed below are just examples. Set them to whatever models
+# are actually available at your configured provider.
+#
+# OPTIONAL CAPABILITIES:
+#   Keys left blank or flags left false cause the corresponding test to be skipped
+#   automatically — no test failures result from a missing or unsupported capability.
+
+# Base URL of the OpenAI-compatible API endpoint to test against
+test.base.url=http://localhost:11434/v1
+
+# API key (use any non-empty string for local servers that don't require auth)
+test.api.key=local
+
+# A general-purpose chat/completion/embedding model available at your provider
+# Examples: llama3.2:3b  gemma3:1b  mistral:latest  gpt-4o-mini
+test.model=llama3.2:3b
+
+# A vision-capable model available at your provider (must support image input).
+# Leave blank to skip the vision test.
+# Examples: llama3.2-vision:latest  gpt-4o-mini  moondream:latest
+test.vision.model=
+
+# A reasoning/thinking model (o1/o3/QwQ-style extended reasoning).
+# Leave blank to skip the reasoning test.
+# Examples: qwq:latest  o1-mini  o3-mini
+test.reasoning.model=
+
+# Set to true if the provider supports audio (TTS/STT) — OpenAI cloud only
+test.audio.enabled=false
+
+# Set to true if the provider supports image generation (DALL-E) — OpenAI cloud only
+test.image.generation.enabled=false
+
+# Set to true if the provider supports the moderation endpoint — OpenAI cloud only
+test.moderation.enabled=false
