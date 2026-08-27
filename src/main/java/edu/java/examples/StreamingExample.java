@@ -10,7 +10,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 /**
- * Sub-Task 4: Token-by-token streaming chat completion.
+ * Token-by-token streaming chat completion.
  *
  * <p>
  * Demonstrates Server-Sent Events (SSE) streaming so the assistant's reply appears progressively rather than all at once.
@@ -21,6 +21,12 @@ import org.apache.logging.log4j.Logger;
 public class StreamingExample {
 
     private static final Logger logger = LogManager.getLogger(StreamingExample.class);
+
+    /** System prompt sent with every streaming request. */
+    private static final String SYSTEM_PROMPT = "You are a helpful assistant. Be concise.";
+
+    /** User prompt that drives the streaming response. */
+    private static final String USER_PROMPT = "Count from 1 to 5, saying one fun fact about each number.";
 
     /**
      * Runs the streaming chat completion example.
@@ -40,8 +46,8 @@ public class StreamingExample {
             //@formatter:off
             ChatCompletionCreateParams params = ChatCompletionCreateParams
                     .builder()
-                    .addSystemMessage("You are a helpful assistant. Be concise.")
-                    .addUserMessage("Count from 1 to 5, saying one fun fact about each number.")
+                    .addSystemMessage(SYSTEM_PROMPT)
+                    .addUserMessage(USER_PROMPT)
                     .model(model)
                     .build();
             //@formatter:on

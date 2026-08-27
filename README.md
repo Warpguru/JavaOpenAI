@@ -17,7 +17,7 @@ Covers the full API surface — **chat**, **streaming**, **embeddings**, **visio
 | `reason` | Chat Completions (extended reasoning) | `qwq:latest` | `o4-mini` |
 | `tts` | Audio Speech (text-to-speech) | ❌ not supported locally | `tts-1` |
 | `stt` | Audio Transcriptions (speech-to-text) | ❌ not supported locally | `whisper-1` |
-| `imagegen` | Images (DALL·E / image generation) | ❌ not supported locally | `dall-e-2` |
+| `imagegen` | Images (DALL·E / image generation) | ❌ not supported locally | `gpt-image-1` |
 | `moderate` | Moderations (content classification) | ❌ not supported locally | `omni-moderation-latest` |
 
 > Pull a local model with e.g. `ollama pull llama3.2:3b` — then set `OPENAI_MODEL=llama3.2:3b` and point `OPENAI_BASE_URL` at your server. For cloud commands, an OpenAI API key is required.
@@ -62,7 +62,7 @@ The full set of configuration keys (leave a value empty if that feature is not a
 | `OPENAI_REASONING_MODEL` | `reason` | `o4-mini` |
 | `OPENAI_TTS_MODEL` | `tts` | `tts-1` |
 | `OPENAI_STT_MODEL` | `stt` | `whisper-1` |
-| `OPENAI_IMAGE_MODEL` | `imagegen` | `dall-e-2` |
+| `OPENAI_IMAGE_MODEL` | `imagegen` | `gpt-image-1` |
 | `OPENAI_MODERATION_MODEL` | `moderate` | `omni-moderation-latest` |
 
 Environment variables with the same names take priority over `config.properties`.
@@ -85,7 +85,50 @@ mvn clean install -DskipTests
 mvn test
 ```
 
-The uber-jar is produced at `target/JavaOpenAI-1.0.0.jar`. It contains all dependencies and is self-contained.
+The uber-jar is produced at `target/JavaOpenAI-x.y.z.jar`. It contains all dependencies and is self-contained.
+
+---
+
+## Setting Environment Variables
+
+Configuration can be supplied via environment variables instead of (or in addition to) `config.properties`. Environment variables take priority over the properties file, so no rebuild is needed when switching providers or models — just set the variables in your shell and run the jar directly.
+
+### Windows (cmd)
+
+```cmd
+set OPENAI_BASE_URL=https://api.openai.com/v1
+set OPENAI_API_KEY=sk-...
+set OPENAI_MODEL=gpt-4o-mini
+set OPENAI_EMBEDDING_MODEL=text-embedding-3-small
+set OPENAI_REASONING_MODEL=o4-mini
+set OPENAI_TTS_MODEL=tts-1
+set OPENAI_STT_MODEL=whisper-1
+set OPENAI_IMAGE_MODEL=gpt-image-1
+set OPENAI_MODERATION_MODEL=omni-moderation-latest
+java -jar target/JavaOpenAI-x.y.z.jar <command>
+```
+
+> `set` is session-scoped — variables are only active for the current `cmd` window.
+
+### Windows (PowerShell)
+
+```powershell
+$env:OPENAI_BASE_URL    = "https://api.openai.com/v1"
+$env:OPENAI_API_KEY     = "sk-..."
+$env:OPENAI_MODEL       = "gpt-4o-mini"
+java -jar target/JavaOpenAI-x.y.z.jar <command>
+```
+
+### Linux / macOS (bash/zsh)
+
+```bash
+export OPENAI_BASE_URL=https://api.openai.com/v1
+export OPENAI_API_KEY=sk-...
+export OPENAI_MODEL=gpt-4o-mini
+java -jar target/JavaOpenAI-x.y.z.jar <command>
+```
+
+> You only need to set the variables relevant to the command you are running. For example, `chat` only uses `OPENAI_BASE_URL`, `OPENAI_API_KEY`, and `OPENAI_MODEL`.
 
 ---
 
@@ -94,7 +137,7 @@ The uber-jar is produced at `target/JavaOpenAI-1.0.0.jar`. It contains all depen
 All examples share the same launcher:
 
 ```cmd
-java -jar target/JavaOpenAI-1.0.0.jar <command>
+java -jar target/JavaOpenAI-x.y.z.jar <command>
 ```
 
 ---
@@ -102,7 +145,7 @@ java -jar target/JavaOpenAI-1.0.0.jar <command>
 ### `config` — Show resolved settings
 
 ```cmd
-java -jar target/JavaOpenAI-1.0.0.jar config
+java -jar target/JavaOpenAI-x.y.z.jar config
 ```
 
 Prints all resolved configuration values (API key masked). Run this first to verify your `config.properties` is loaded correctly before making any API calls.
@@ -112,7 +155,7 @@ Prints all resolved configuration values (API key masked). Run this first to ver
 ### `chat` — Synchronous chat completion
 
 ```cmd
-java -jar target/JavaOpenAI-1.0.0.jar chat
+java -jar target/JavaOpenAI-x.y.z.jar chat
 ```
 
 **What it does:** Sends a hardcoded question ("What is the capital of France?") to the model and prints the reply. Uses the blocking (synchronous) Chat Completions API — the full response arrives in one go.
@@ -133,7 +176,7 @@ sequenceDiagram
 ### `stream` — Streaming chat completion
 
 ```cmd
-java -jar target/JavaOpenAI-1.0.0.jar stream
+java -jar target/JavaOpenAI-x.y.z.jar stream
 ```
 
 **What it does:** Sends the same question but uses Server-Sent Events (SSE) streaming. Tokens appear one by one as they are generated, demonstrating how to build a real-time "typewriter" effect in a Java application.
@@ -157,7 +200,7 @@ sequenceDiagram
 ### `embed` — Embeddings and cosine similarity
 
 ```cmd
-java -jar target/JavaOpenAI-1.0.0.jar embed
+java -jar target/JavaOpenAI-x.y.z.jar embed
 ```
 
 **What it does:** Converts three sentences into embedding vectors and computes cosine similarity between them. Demonstrates that semantically related sentences are "closer" in vector space than unrelated ones.
@@ -178,8 +221,8 @@ graph LR
 ### `vision` — Multi-modal image + text
 
 ```cmd
-java -jar target/JavaOpenAI-1.0.0.jar vision
-java -jar target/JavaOpenAI-1.0.0.jar vision https://example.com/image.jpg
+java -jar target/JavaOpenAI-x.y.z.jar vision
+java -jar target/JavaOpenAI-x.y.z.jar vision https://example.com/image.jpg
 ```
 
 **What it does:** Downloads an image (default: a public Wikipedia PNG), encodes it as a Base64 data URL, and sends it alongside a text prompt asking the model to describe what it sees. Using Base64 ensures local servers — which cannot fetch external URLs themselves — also work.
@@ -203,7 +246,7 @@ sequenceDiagram
 ### `reason` — Reasoning / chain-of-thought
 
 ```cmd
-java -jar target/JavaOpenAI-1.0.0.jar reason
+java -jar target/JavaOpenAI-x.y.z.jar reason
 ```
 
 **What it does:** Poses a classic word problem ("A farmer has 17 sheep. All but 9 die. How many are left?") and asks the model to show its step-by-step reasoning before giving the final answer. Reasoning-capable models (o1/o3/QwQ-style) produce an internal chain-of-thought before responding.
@@ -222,10 +265,10 @@ graph TD
 ### `tts` — Text-to-speech
 
 ```cmd
-java -jar target/JavaOpenAI-1.0.0.jar tts
+java -jar target/JavaOpenAI-x.y.z.jar tts
 ```
 
-**What it does:** Sends a short text string to the OpenAI Audio Speech endpoint and writes the synthesised speech to `output-speech.mp3` in the current directory.
+**What it does:** Sends a short text string to the OpenAI Audio Speech endpoint and writes the synthesised speech to `AudioSpeechExample.mp3` in the current directory.
 
 ```mermaid
 sequenceDiagram
@@ -233,7 +276,7 @@ sequenceDiagram
     participant API as OpenAI TTS
     App->>API: POST /v1/audio/speech<br/>{model, voice, input text}
     API-->>App: MP3 audio bytes
-    App->>App: Write output-speech.mp3
+    App->>App: Write AudioSpeechExample.mp3
 ```
 
 > **Requires OpenAI cloud.** Set `OPENAI_TTS_MODEL` (default `tts-1`). Local servers do not implement this endpoint.
@@ -243,7 +286,7 @@ sequenceDiagram
 ### `stt` — Speech-to-text (Whisper)
 
 ```cmd
-java -jar target/JavaOpenAI-1.0.0.jar stt
+java -jar target/JavaOpenAI-x.y.z.jar stt
 ```
 
 **What it does:** Downloads a short public-domain audio clip, sends it to the Whisper transcription endpoint, and prints the recognised text.
@@ -267,28 +310,28 @@ sequenceDiagram
 ### `imagegen` — Image generation (DALL·E)
 
 ```cmd
-java -jar target/JavaOpenAI-1.0.0.jar imagegen
+java -jar target/JavaOpenAI-x.y.z.jar imagegen
 ```
 
-**What it does:** Sends a text prompt ("A serene mountain lake at sunrise") to the DALL·E image generation endpoint and prints the URL of the generated image.
+**What it does:** Sends a text prompt ("A serene mountain lake at sunrise") to the image generation endpoint. Models that return a URL (e.g. `dall-e-2`) have the URL logged; models that return Base64 (e.g. `gpt-image-1`) have the image decoded and written to `ImageGenerationExample.jpg` in the current directory.
 
 ```mermaid
 sequenceDiagram
     participant App
     participant API as OpenAI Images
     App->>API: POST /v1/images/generations<br/>{model, prompt, size}
-    API-->>App: URL of generated image
-    App->>App: Print image URL
+    API-->>App: Base64 image (gpt-image-1)<br/>or URL (dall-e-2)
+    App->>App: Decode and write ImageGenerationExample.jpg
 ```
 
-> **Requires OpenAI cloud.** Set `OPENAI_IMAGE_MODEL` (default `dall-e-2`). Local servers do not implement this endpoint.
+> **Requires OpenAI cloud.** Set `OPENAI_IMAGE_MODEL` (default `gpt-image-1`). Local servers do not implement this endpoint.
 
 ---
 
 ### `moderate` — Content moderation
 
 ```cmd
-java -jar target/JavaOpenAI-1.0.0.jar moderate
+java -jar target/JavaOpenAI-x.y.z.jar moderate
 ```
 
 **What it does:** Sends two sentences (one benign, one borderline) through the moderation endpoint and prints which content categories were flagged. Useful for understanding how to integrate content safety checks into an application.

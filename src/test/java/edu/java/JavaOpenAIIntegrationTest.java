@@ -20,6 +20,7 @@ import org.apache.logging.log4j.Logger;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledIf;
 
+import java.io.InputStream;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -47,6 +48,13 @@ import static org.junit.jupiter.api.Assertions.*;
 class JavaOpenAIIntegrationTest {
 
     private static final Logger logger = LogManager.getLogger(JavaOpenAIIntegrationTest.class);
+
+    /** Primary URL used for the vision test image. */
+    private static final String VISION_IMAGE_URL =
+            "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTcsttXjKGaz5esiHafrsYeQe0VtUviNo9IiD3uRKiPjw&s";
+
+    /** Classpath resource name used as fallback when the vision image URL cannot be downloaded. */
+    private static final String VISION_FALLBACK_RESOURCE = "Pillars of creation.jpg";
 
     // -------------------------------------------------------------------------
     // Config tests (no network required)
@@ -204,17 +212,16 @@ class JavaOpenAIIntegrationTest {
 
     @Test
     @EnabledIf("visionModelConfigured")
-    void vision_describesImageViaBase64() {
+    void vision_describesImageViaBase64() throws Exception {
         // Sends the image as a Base64 data URL so local servers can process it
         // without needing to fetch external URLs.
         OpenAIClient client = buildClient();
         String visionModel = TestConfig.visionModel();
 
-        String imageUrl = "https://upload.wikimedia.org/wikipedia/commons/thumb/4/47/"
-                + "PNG_transparency_demonstration_1.png/280px-PNG_transparency_demonstration_1.png";
+        String imageUrl = VISION_IMAGE_URL;
 
         try {
-            String base64DataUrl = edu.java.examples.VisionExample.toBase64DataUrl(imageUrl);
+            String base64DataUrl = loadImageAsBase64(imageUrl);
 
             List<ChatCompletionContentPart> parts = List.of(
                     ChatCompletionContentPart.ofImageUrl(ChatCompletionContentPartImage.builder()
@@ -235,8 +242,34 @@ class JavaOpenAIIntegrationTest {
         } catch (com.openai.errors.BadRequestException e) {
             // Some local models reject vision input — treat as a known limitation, not a failure
             logger.warn("[Vision] Model does not support vision input via /v1: {}", e.getMessage());
-        } catch (Exception e) {
-            logger.warn("[Vision] Skipped due to: {}", e.getMessage());
+        }
+    }
+
+    /**
+     * Downloads an image from {@code url} as a Base64 data URL. If the download fails for any
+     * reason (e.g. network block, 403), falls back to loading {@link #VISION_FALLBACK_RESOURCE}
+     * from the test classpath.
+     *
+     * @param url primary image URL to attempt
+     * @return Base64 data URL ({@code data:image/jpeg;base64,...})
+     * @throws Exception if both the download and the classpath fallback fail
+     */
+    private static String loadImageAsBase64(String url) throws Exception {
+        try {
+            String result = edu.java.examples.VisionExample.toBase64DataUrl(url);
+            logger.info("[Vision] Image loaded from URL: {}", url);
+            return result;
+        } catch (Exception downloadEx) {
+            logger.warn("[Vision] Download failed ({}), falling back to classpath image", downloadEx.getMessage());
+            try (InputStream in = JavaOpenAIIntegrationTest.class.getClassLoader()
+                    .getResourceAsStream(VISION_FALLBACK_RESOURCE)) {
+                if (in == null) {
+                    throw new IllegalStateException("Classpath fallback image '" + VISION_FALLBACK_RESOURCE + "' not found");
+                }
+                byte[] bytes = in.readAllBytes();
+                logger.info("[Vision] Loaded fallback image from classpath ({} bytes)", bytes.length);
+                return edu.java.examples.VisionExample.toBase64DataUrl(bytes, "image/jpeg");
+            }
         }
     }
 
@@ -261,7 +294,8 @@ class JavaOpenAIIntegrationTest {
         String reply = response.choices().get(0).message().content().orElse("");
         logger.info("[Reason] Reply: {}", reply);
         assertFalse(reply.isBlank(), "Reasoning reply must not be blank");
-        assertTrue(reply.contains("9"), "Reply should mention '9' as the answer, got: " + reply);
+        assertTrue(reply.contains("9") || reply.toLowerCase().contains("nine"),
+                "Reply should mention '9' or 'nine' as the answer, got: " + reply);
     }
 
     // -------------------------------------------------------------------------

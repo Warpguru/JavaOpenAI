@@ -26,6 +26,11 @@ public class ReasoningExample {
 
     private static final Logger logger = LogManager.getLogger(ReasoningExample.class);
 
+    /** Word problem posed to the reasoning model. */
+    private static final String REASONING_PROMPT =
+            "A farmer has 17 sheep. All but 9 die. How many sheep does the farmer have left? "
+            + "Show your step-by-step reasoning before giving the final answer.";
+
     /**
      * Runs the reasoning / chain-of-thought example.
      *
@@ -48,8 +53,7 @@ public class ReasoningExample {
             //@formatter:off
             ChatCompletionCreateParams params = ChatCompletionCreateParams
                     .builder()
-                    .addUserMessage("A farmer has 17 sheep. All but 9 die. How many sheep does the farmer have left? "
-                            + "Show your step-by-step reasoning before giving the final answer.")
+                    .addUserMessage(REASONING_PROMPT)
                     .model(model)
                     .build();
 

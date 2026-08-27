@@ -39,9 +39,9 @@ public class VisionExample {
 
     private static final Logger logger = LogManager.getLogger(VisionExample.class);
 
-    /** Public-domain PNG used as the default input image when no URL argument is supplied. */
-    private static final String DEFAULT_IMAGE_URL = "https://upload.wikimedia.org/wikipedia/commons/thumb/4/47/"
-            + "PNG_transparency_demonstration_1.png/280px-PNG_transparency_demonstration_1.png";
+    /** Default image URL used when no argument is supplied. */
+    private static final String DEFAULT_IMAGE_URL =
+            "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTcsttXjKGaz5esiHafrsYeQe0VtUviNo9IiD3uRKiPjw&s";
 
     /**
      * Runs the vision example.
@@ -108,12 +108,12 @@ public class VisionExample {
     }
 
     /**
-     * Downloads an image from {@code url} and returns a Base64 data URL of the form {@code data:image/<mime>;base64,<data>}
-     * that can be embedded directly in an API request — no external URL-fetching required on the server side.
+     * Downloads an image from {@code url} and returns a Base64 data URL of the form
+     * {@code data:image/<mime>;base64,<data>} that can be embedded directly in an API request.
      *
      * <p>
-     * The MIME type is inferred from the URL extension: {@code .png} maps to {@code image/png}; all other extensions default to
-     * {@code image/jpeg}.
+     * The MIME type is inferred from the URL path: {@code .png} maps to {@code image/png};
+     * all other extensions default to {@code image/jpeg}.
      *
      * @param url the HTTP(S) URL of the image to download
      * @return a Base64 data URL string ready to use as an image part in a chat request
@@ -122,11 +122,22 @@ public class VisionExample {
     public static String toBase64DataUrl(String url) throws Exception {
         try (InputStream in = URI.create(url).toURL().openStream()) {
             byte[] bytes = in.readAllBytes();
-            String base64 = Base64.getEncoder().encodeToString(bytes);
-            // Infer MIME type from URL extension; default to jpeg
+            // Infer MIME type from URL path; default to jpeg
             String mime = url.toLowerCase().contains(".png") ? "image/png" : "image/jpeg";
-            return "data:" + mime + ";base64," + base64;
+            return toBase64DataUrl(bytes, mime);
         }
     }
-    
+
+    /**
+     * Encodes raw image bytes as a Base64 data URL of the form
+     * {@code data:<mime>;base64,<data>}.
+     *
+     * @param bytes the raw image bytes
+     * @param mime  the MIME type (e.g. {@code image/jpeg}, {@code image/png})
+     * @return a Base64 data URL string ready to use as an image part in a chat request
+     */
+    public static String toBase64DataUrl(byte[] bytes, String mime) {
+        return "data:" + mime + ";base64," + Base64.getEncoder().encodeToString(bytes);
+    }
+
 }

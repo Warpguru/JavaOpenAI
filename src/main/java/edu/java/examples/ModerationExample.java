@@ -29,6 +29,12 @@ public class ModerationExample {
 
     private static final Logger logger = LogManager.getLogger(ModerationExample.class);
 
+    /** Sample inputs submitted to the moderation endpoint — one benign, one mildly flagged. */
+    private static final String[] SAMPLE_INPUTS = {
+            "I love sunny days and going for walks.",
+            "I am feeling very frustrated and want to punch a wall."
+    };
+
     /**
      * Runs the moderation example.
      *
@@ -49,11 +55,7 @@ public class ModerationExample {
         try {
             OpenAIClient client = ClientFactory.create();
 
-            // One benign and one mildly negative sentence to illustrate the category scores
-            String[] inputs = { "I love sunny days and going for walks.",
-                    "I am feeling very frustrated and want to punch a wall." };
-
-            for (String input : inputs) {
+            for (String input : SAMPLE_INPUTS) {
                 //@formatter:off
                 ModerationCreateParams params = ModerationCreateParams
                         .builder()

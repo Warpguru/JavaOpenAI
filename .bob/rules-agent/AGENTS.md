@@ -10,7 +10,7 @@
 - All examples live in `edu.java.examples.*`; utilities in `edu.java.util.*`; config/client in `edu.java.api.*`
 - `edu.java.JavaOpenAI` is the single dispatcher — every new example must be registered there with its CLI command string in the `switch` inside `process()`
 - `main()` is the only `static` method allowed in `JavaOpenAI` — all other methods must be instance methods
-- Every new example class needs both loggers: `out = LogManager.getLogger("edu.java.Sysout")` for human output, `log = LogManager.getLogger(MyClass.class)` for diagnostics
+- Every new example class needs a **single logger**: `private static final Logger logger = LogManager.getLogger(MyClass.class)` — use `logger.info(...)` for all human-facing output (it renders plain on the console via `ConsoleAppender`) and `logger.debug/error(...)` for diagnostics (file only). Do **not** add a second `Sysout` logger.
 - All public and private methods, constants, and classes must have Javadoc
 
 ## OpenAI SDK `com.openai:openai-java:4.52.0`
@@ -24,7 +24,7 @@ Key call patterns:
 - Vision: build a `List<ChatCompletionContentPart>` and call `.contentOfArrayOfContentParts(list)` — no `addContentPart()` method exists
 - TTS: `client.audio().speech().create(params)` — `Voice` is a sealed union, use `.voice("nova")` not `Voice.NOVA`
 - STT: `client.audio().transcriptions().create(params)` — model takes `AudioModel`, returns sealed `TranscriptionCreateResponse`; call `.asTranscription().text()`
-- Image gen: `client.images().generate(params)` — use `ImageModel.DALL_E_2`, `.size("512x512")` (no enum constants for these)
+- Image gen: `client.images().generate(params)` — use `ImageModel.DALL_E_2` from `com.openai.models.images.ImageModel`; use `.size("1024x1024")` — `512x512` is not valid for `gpt-image-1` (the default model). `gpt-image-1` returns Base64 (`b64_json`), not a URL; decode with `Base64.getDecoder().decode(b64)` and write to disk.
 - Moderation: `client.moderations().create(params)` — `Moderation.categories()` is not `Optional`, and its flag getters return primitive `boolean`
 
 When an SDK class name is uncertain, inspect the sources jar via PowerShell (see root AGENTS.md for the full technique).

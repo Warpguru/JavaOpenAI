@@ -26,3 +26,6 @@ replay_pid*
 
 # Local OpenAI config (copy from config.properties.example)
 config.properties
+# Downloaded generations
+/AudioSpeechExample.mp3
+/ImageGenerationExample.jpg

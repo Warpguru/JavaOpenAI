@@ -23,12 +23,18 @@ public class ChatExample {
 
     private static final Logger logger = LogManager.getLogger(ChatExample.class);
 
+    /** System prompt sent with every request. */
+    private static final String SYSTEM_PROMPT = "You are a helpful assistant.";
+
+    /** User question posed to the model. */
+    private static final String USER_PROMPT =
+            "Tell me a fun fact about Java (the programming language) in one sentence.";
+
     /**
      * Runs the synchronous chat completion example.
      *
      * <p>Sends a fixed question to the model configured by {@code OPENAI_MODEL}, prints the
-     * assistant reply to the {@code edu.java.Sysout} logger, and logs token usage to the
-     * diagnostics logger.
+     * assistant reply, and logs token usage.
      *
      * @throws RuntimeException wrapping any API or network error
      */
@@ -40,8 +46,8 @@ public class ChatExample {
             //@formatter:off
             ChatCompletionCreateParams params = ChatCompletionCreateParams
                     .builder()
-                    .addSystemMessage("You are a helpful assistant.")
-                    .addUserMessage("Tell me a fun fact about Java (the programming language) in one sentence.").model(model)
+                    .addSystemMessage(SYSTEM_PROMPT)
+                    .addUserMessage(USER_PROMPT).model(model)
                     .build();
             //@formatter:on
 

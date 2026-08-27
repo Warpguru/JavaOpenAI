@@ -38,7 +38,7 @@ OPENAI_MODEL=
 OPENAI_EMBEDDING_MODEL=
 
 # Reasoning / chain-of-thought model  (command: reason)
-# Falls back to OPENAI_MODEL if left empty.
+# Defaults to o4-mini if left empty.
 OPENAI_REASONING_MODEL=
 
 # Text-to-speech model  (command: tts)

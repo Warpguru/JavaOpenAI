@@ -9,7 +9,7 @@ import org.apache.logging.log4j.Logger;
  * Factory for constructing an {@link OpenAIClient}.
  *
  * <p>
- * API key and base URL are sourced from {@link Config}. The resolved base URL is logged at INFO; the API key is never logged.
+ * API key and base URL are sourced from {@link Config}. The API key is never logged.
  */
 public class ClientFactory {
 
@@ -30,7 +30,7 @@ public class ClientFactory {
         String baseUrl = Config.getBaseUrl();
         String apiKey = Config.getApiKey();
 
-        logger.info("OpenAI base URL: {}", baseUrl);
+        logger.debug("OpenAI base URL: {}", baseUrl);
 
         OpenAIOkHttpClient.Builder builder = OpenAIOkHttpClient.builder().baseUrl(baseUrl);
 

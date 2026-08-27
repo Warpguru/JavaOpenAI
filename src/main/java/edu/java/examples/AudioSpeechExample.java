@@ -27,7 +27,16 @@ public class AudioSpeechExample {
     private static final Logger logger = LogManager.getLogger(AudioSpeechExample.class);
 
     /** Name of the MP3 file written to the current working directory. */
-    private static final String OUTPUT_FILE = "output-speech.mp3";
+    private static final String OUTPUT_FILE = "AudioSpeechExample.mp3";
+
+    /** Text synthesised into speech. */
+    private static final String TTS_INPUT = "Hello! This is a text-to-speech demonstration using the OpenAI API.";
+
+    /**
+     * Voice used for synthesis.
+     * {@code Voice} is a sealed union type in the SDK; the string overload must be used.
+     */
+    private static final String TTS_VOICE = "nova";
 
     /**
      * Runs the TTS example.
@@ -47,10 +56,10 @@ public class AudioSpeechExample {
             //@formatter:off
             SpeechCreateParams params = SpeechCreateParams
                     .builder()
-                    .input("Hello! This is a text-to-speech demonstration using the OpenAI API.")
+                    .input(TTS_INPUT)
                     .model(model)
                     // Voice is a sealed union type; use string overload for named voices
-                    .voice("nova")
+                    .voice(TTS_VOICE)
                     .build();
             //@formatter:on
 

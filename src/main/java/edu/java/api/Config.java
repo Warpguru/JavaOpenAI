@@ -45,11 +45,12 @@ public class Config {
     public static String get(String key) {
         // 1. Environment variable
         String envValue = System.getenv(key);
-        if (envValue != null && !envValue.isEmpty()) {
-            return envValue;
+        if (envValue != null && !envValue.isBlank()) {
+            return envValue.trim();
         }
         // 2. config.properties
-        return loadProperties().getProperty(key);
+        String propValue = loadProperties().getProperty(key);
+        return propValue != null ? propValue.trim() : null;
     }
 
     /**
@@ -125,13 +126,13 @@ public class Config {
     }
 
     /**
-     * Image-generation model. Defaults to {@code dall-e-2}.
-     * 
+     * Image-generation model. Defaults to {@code gpt-image-1}.
+     *
      * @return imageModel
      */
     public static String getImageModel() {
         String v = get("OPENAI_IMAGE_MODEL");
-        return (v != null && !v.isEmpty()) ? v : "dall-e-2";
+        return (v != null && !v.isEmpty()) ? v : "gpt-image-1";
     }
 
     /**

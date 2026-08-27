@@ -4,7 +4,7 @@ This file provides guidance to agents when working with code in this repository.
 
 ## Project Purpose
 
-Java 21 tutorial for the OpenAI API. Produces a single uber-jar (`target/JavaOpenAI-1.0.0.jar`) launched via `java -jar JavaOpenAI-1.0.0.jar <command>`. Works against OpenAI cloud and any OpenAI-compatible local LLM server via configurable base URL.
+Java 21 tutorial for the OpenAI API. Produces a single uber-jar (`target/JavaOpenAI-x.y.z.jar`) launched via `java -jar JavaOpenAI-x.y.z.jar <command>`. Works against OpenAI cloud and any OpenAI-compatible local LLM server via configurable base URL.
 
 ---
 
@@ -26,7 +26,7 @@ mvn package                                            # build uber-jar
 mvn test                                               # run all integration tests
 mvn test -Dtest=JavaOpenAIIntegrationTest#<methodName>    # run a single test
 mvn package -DskipTests                                # build without running tests
-java -jar target/JavaOpenAI-1.0.0.jar <command>       # run an example
+java -jar target/JavaOpenAI-x.y.z.jar <command>       # run an example
 ```
 
 Available commands: `config`, `chat`, `stream`, `embed`, `vision`, `reason`, `tts`, `stt`, `imagegen`, `moderate`
@@ -57,7 +57,7 @@ Official first-party OpenAI Java SDK (Kotlin source). All request/response objec
 | `ImagesResponse.data()` | Returns `Optional<List<Image>>`; use `.ifPresent(images -> ...)` |
 | `Moderation.categories()` | Returns `Moderation.Categories` directly (not `Optional`) |
 | `Moderation.Categories.hate()` etc. | Returns primitive `boolean`, not `Optional<Boolean>` |
-| `ImageGenerateParams.Size._512X512` does not exist | Use `.size("512x512")` (string overload) |
+| `ImageGenerateParams.Size._512X512` does not exist | Use `.size("1024x1024")` — supported by both `dall-e-2` and `gpt-image-1`; `512x512` is not valid for `gpt-image-1` |
 
 ### Sources jar lookup technique (PowerShell)
 
@@ -110,7 +110,7 @@ All 9 config keys with defaults:
 | `OPENAI_REASONING_MODEL` | `o4-mini` |
 | `OPENAI_TTS_MODEL` | `tts-1` |
 | `OPENAI_STT_MODEL` | `whisper-1` |
-| `OPENAI_IMAGE_MODEL` | `dall-e-2` |
+| `OPENAI_IMAGE_MODEL` | `gpt-image-1` |
 | `OPENAI_MODERATION_MODEL` | `omni-moderation-latest` |
 
 Copy `config.properties.example` → `config.properties` to configure.
