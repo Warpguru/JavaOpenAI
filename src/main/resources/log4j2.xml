@@ -38,8 +38,8 @@
 
 		<!--
 		  edu.java Logger: Single logger for all application code.
-		  - Console: plain %msg%n, INFO and above — human-readable program output.
-		  - File: full detail, ALL levels — complete diagnostic record.
+		  - Console: plain %msg%n, INFO and above - human-readable program output.
+		  - File: full detail, ALL levels - complete diagnostic record.
 		-->
 		<Logger name="edu.java" level="ALL" additivity="false">
 			<AppenderRef ref="ConsoleAppender">

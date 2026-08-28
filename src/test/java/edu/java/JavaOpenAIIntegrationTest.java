@@ -32,8 +32,12 @@ import static org.junit.jupiter.api.Assertions.*;
  *
  * <p>
  * Connection details are loaded from {@code src/test/resources/test.properties} (gitignored).
- * Copy {@code test.properties.example} and fill in the values for your target server. Without
- * the file, defaults pointing to {@code http://localhost:11434/v1} are used.
+ * Copy {@code test.properties.example} and fill in the values for your target server.
+ *
+ * <p>
+ * When {@code test.base.url} is blank or absent, all network tests are skipped and a warning
+ * is logged — the build succeeds with skipped tests. This allows the test suite to run cleanly
+ * in CI environments where no LLM server is available (e.g. GitHub Actions without secrets).
  *
  * <p>
  * Tests that require optional provider capabilities (vision, audio, image generation,
@@ -55,6 +59,28 @@ class JavaOpenAIIntegrationTest {
 
     /** Classpath resource name used as fallback when the vision image URL cannot be downloaded. */
     private static final String VISION_FALLBACK_RESOURCE = "Pillars of creation.jpg";
+
+    // -------------------------------------------------------------------------
+    // Guard — skips all network tests when no server is configured
+    // -------------------------------------------------------------------------
+
+    /**
+     * Returns {@code true} when {@code test.base.url} is set to a non-blank value in
+     * {@code test.properties}. All network-dependent tests are annotated with
+     * {@code @EnabledIf("serverConfigured")} so that they skip cleanly when no LLM server
+     * is available (e.g. in a CI environment without secrets).
+     *
+     * @return {@code true} if a server URL has been configured
+     */
+    static boolean serverConfigured() {
+        String url = TestConfig.baseUrl();
+        boolean configured = url != null && !url.isBlank();
+        if (!configured) {
+            logger.warn("[Config] test.base.url is not set - all network tests will be skipped. "
+                    + "Copy test.properties.example to test.properties to configure a server.");
+        }
+        return configured;
+    }
 
     // -------------------------------------------------------------------------
     // Config tests (no network required)
@@ -89,6 +115,7 @@ class JavaOpenAIIntegrationTest {
     // -------------------------------------------------------------------------
 
     @Test
+    @EnabledIf("serverConfigured")
     void clientFactory_buildsClientFromTestConfig() {
         OpenAIClient client = buildClient();
         assertNotNull(client);
@@ -100,6 +127,7 @@ class JavaOpenAIIntegrationTest {
     // -------------------------------------------------------------------------
 
     @Test
+    @EnabledIf("serverConfigured")
     void chat_completionReturnsNonEmptyReply() {
         OpenAIClient client = buildClient();
 
@@ -121,6 +149,7 @@ class JavaOpenAIIntegrationTest {
     }
 
     @Test
+    @EnabledIf("serverConfigured")
     void chat_tokenUsageIsReported() {
         OpenAIClient client = buildClient();
 
@@ -130,7 +159,7 @@ class JavaOpenAIIntegrationTest {
         ChatCompletion response = client.chat().completions().create(params);
 
         response.usage().ifPresent(usage -> {
-            logger.info("[Chat] Tokens — prompt: {}, completion: {}, total: {}",
+            logger.info("[Chat] Tokens - prompt: {}, completion: {}, total: {}",
                     usage.promptTokens(), usage.completionTokens(), usage.totalTokens());
             assertTrue(usage.totalTokens() > 0, "Total tokens must be positive");
         });
@@ -141,6 +170,7 @@ class JavaOpenAIIntegrationTest {
     // -------------------------------------------------------------------------
 
     @Test
+    @EnabledIf("serverConfigured")
     void streaming_receivesMultipleChunks() {
         OpenAIClient client = buildClient();
 
@@ -178,6 +208,7 @@ class JavaOpenAIIntegrationTest {
     // -------------------------------------------------------------------------
 
     @Test
+    @EnabledIf("serverConfigured")
     void embeddings_cosineSimilarityOfRelatedSentences() {
         OpenAIClient client = buildClient();
 
@@ -197,8 +228,8 @@ class JavaOpenAIIntegrationTest {
                     "Related sentences should be more similar than unrelated ones. simAB=" + simAB + ", simAC=" + simAC);
 
         } catch (Exception e) {
-            // Some models don't support embeddings — log and skip gracefully
-            logger.warn("[Embed] Skipped: model does not support embeddings — {}", e.getMessage());
+            // Some models don't support embeddings - log and skip gracefully
+            logger.warn("[Embed] Skipped: model does not support embeddings - {}", e.getMessage());
         }
     }
 
@@ -240,7 +271,7 @@ class JavaOpenAIIntegrationTest {
             assertFalse(reply.isBlank(), "Vision reply must not be blank");
 
         } catch (com.openai.errors.BadRequestException e) {
-            // Some local models reject vision input — treat as a known limitation, not a failure
+            // Some local models reject vision input - treat as a known limitation, not a failure
             logger.warn("[Vision] Model does not support vision input via /v1: {}", e.getMessage());
         }
     }

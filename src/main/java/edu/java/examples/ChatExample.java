@@ -72,7 +72,7 @@ public class ChatExample {
 
             // Log token usage at INFO (diagnostics channel)
             Optional<CompletionUsage> usageOpt = response.usage();
-            usageOpt.ifPresent(usage -> logger.info("Token usage — prompt: {}, completion: {}, total: {}", usage.promptTokens(),
+            usageOpt.ifPresent(usage -> logger.info("Token usage - prompt: {}, completion: {}, total: {}", usage.promptTokens(),
                     usage.completionTokens(), usage.totalTokens()));
 
         } catch (Exception e) {

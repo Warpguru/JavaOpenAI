@@ -20,7 +20,7 @@ import java.util.Properties;
  *
  * <p>
  * Every getter always returns a non-null, non-empty string. {@code config.properties} is
- * gitignored — copy {@code config.properties.example} to create it. If the file is absent,
+ * gitignored - copy {@code config.properties.example} to create it. If the file is absent,
  * only environment variables and hard-coded defaults are used.
  */
 public class Config {
@@ -168,7 +168,7 @@ public class Config {
                             p.load(is);
                             logger.debug("Loaded {}", FILE_CONFIG_PROPERTIES);
                         } else {
-                            logger.debug("{} not found on classpath — using env vars and defaults only",
+                            logger.debug("{} not found on classpath - using env vars and defaults only",
                                     FILE_CONFIG_PROPERTIES);
                         }
                     } catch (IOException e) {

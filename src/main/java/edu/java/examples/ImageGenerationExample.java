@@ -61,7 +61,7 @@ public class ImageGenerationExample {
         try {
             OpenAIClient client = ClientFactory.create();
 
-            // ImageModel is a top-level class — there is no ImageGenerateParams.Model inner class.
+            // ImageModel is a top-level class - there is no ImageGenerateParams.Model inner class.
             // ImagesResponse.data() returns Optional<List<Image>>, not List<Image>.
             // Size "1024x1024" is supported by both dall-e-2 and gpt-image-1.
             //@formatter:off
@@ -97,7 +97,7 @@ public class ImageGenerationExample {
                 });
             }));
         } catch (Exception e) {
-            logger.info("Image generation failed: {} — this endpoint requires OpenAI cloud access.", e.getMessage());
+            logger.info("Image generation failed: {} - this endpoint requires OpenAI cloud access.", e.getMessage());
             logger.error("Image generation failed", e);
         }
     }

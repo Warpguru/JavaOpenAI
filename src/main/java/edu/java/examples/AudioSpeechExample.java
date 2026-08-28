@@ -83,7 +83,7 @@ public class AudioSpeechExample {
             logger.info("Failed to write audio file: {}", e.getMessage());
             logger.error("TTS file write failed", e);
         } catch (Exception e) {
-            logger.info("TTS request failed: {} — this endpoint requires OpenAI cloud access.", e.getMessage());
+            logger.info("TTS request failed: {} - this endpoint requires OpenAI cloud access.", e.getMessage());
             logger.error("TTS request failed", e);
         }
     }

@@ -8,7 +8,7 @@ Java 21 tutorial for the OpenAI API. Produces a single uber-jar (`target/JavaOpe
 
 ---
 
-## Critical Environment Setup (Windows — MUST run before any Maven or Java command)
+## Critical Environment Setup (Windows - MUST run before any Maven or Java command)
 
 ```cmd
 D:\Development\SetupEnvJava21.cmd
@@ -35,13 +35,13 @@ Available commands: `config`, `chat`, `stream`, `embed`, `vision`, `reason`, `tt
 
 ## JUnit Version
 
-`junit-jupiter 6.1.3` in `pom.xml` is **correct** — JUnit released a real 6.x major in 2024/2025. `maven-surefire-plugin 3.5.3` is required for JUnit 6 platform detection. Do not downgrade either.
+`junit-jupiter 6.1.3` in `pom.xml` is **correct** - JUnit released a real 6.x major in 2024/2025. `maven-surefire-plugin 3.5.3` is required for JUnit 6 platform detection. Do not downgrade either.
 
 ---
 
 ## SDK: `com.openai:openai-java 4.52.0`
 
-Official first-party OpenAI Java SDK (Kotlin source). All request/response objects use immutable builders. When API class names are uncertain, look them up from the sources jar — see technique below.
+Official first-party OpenAI Java SDK (Kotlin source). All request/response objects use immutable builders. When API class names are uncertain, look them up from the sources jar - see technique below.
 
 ### Key SDK gotchas (discovered from source inspection)
 
@@ -49,7 +49,7 @@ Official first-party OpenAI Java SDK (Kotlin source). All request/response objec
 |---|---|
 | `ChatCompletionUserMessageParam` has no `addContentPart()` | Use `.contentOfArrayOfContentParts(List<ChatCompletionContentPart>)` |
 | `ChatCompletionContentPart` factory methods | `ChatCompletionContentPart.ofImageUrl(...)` / `.ofText(...)` |
-| Vision image field | Pass base64 data URL (`data:image/png;base64,...`) — local servers cannot fetch raw HTTP URLs |
+| Vision image field | Pass base64 data URL (`data:image/png;base64,...`) - local servers cannot fetch raw HTTP URLs |
 | `SpeechCreateParams.Voice.NOVA` does not exist | `Voice` is a sealed union; use `.voice("nova")` (string overload) |
 | `TranscriptionCreateParams.model()` | Takes `AudioModel` (`com.openai.models.audio.AudioModel`), NOT `TranscriptionModel` |
 | `client.audio().transcriptions().create()` | Returns `TranscriptionCreateResponse` (sealed union); call `.asTranscription().text()` |
@@ -57,7 +57,7 @@ Official first-party OpenAI Java SDK (Kotlin source). All request/response objec
 | `ImagesResponse.data()` | Returns `Optional<List<Image>>`; use `.ifPresent(images -> ...)` |
 | `Moderation.categories()` | Returns `Moderation.Categories` directly (not `Optional`) |
 | `Moderation.Categories.hate()` etc. | Returns primitive `boolean`, not `Optional<Boolean>` |
-| `ImageGenerateParams.Size._512X512` does not exist | Use `.size("1024x1024")` — supported by both `dall-e-2` and `gpt-image-1`; `512x512` is not valid for `gpt-image-1` |
+| `ImageGenerateParams.Size._512X512` does not exist | Use `.size("1024x1024")` - supported by both `dall-e-2` and `gpt-image-1`; `512x512` is not valid for `gpt-image-1` |
 
 ### Sources jar lookup technique (PowerShell)
 
@@ -89,9 +89,9 @@ LogManager.getLogger(MyClass.class)   →  edu.java hierarchy
 | `ConsoleAppender` | stdout | `%msg%n` (plain) | INFO only |
 | `FileAppender` | `JavaOpenAI.log` | full timestamp/level/location | ALL levels |
 
-Use `logger.info(...)` for all human-facing output — it appears plain on the console and with full detail in the log file. Use `logger.debug(...)` / `logger.error(...)` for diagnostics that should go to the file only.
+Use `logger.info(...)` for all human-facing output - it appears plain on the console and with full detail in the log file. Use `logger.debug(...)` / `logger.error(...)` for diagnostics that should go to the file only.
 
-**Shade plugin requirement:** Log4j2 needs `Log4j2PluginCacheFileTransformer` from `log4j-transform-maven-shade-plugin-extensions:0.2.0` as a plugin `<dependency>` inside the shade plugin — without it, logging breaks silently in the uber-jar.
+**Shade plugin requirement:** Log4j2 needs `Log4j2PluginCacheFileTransformer` from `log4j-transform-maven-shade-plugin-extensions:0.2.0` as a plugin `<dependency>` inside the shade plugin - without it, logging breaks silently in the uber-jar.
 
 ---
 
@@ -104,7 +104,7 @@ All 9 config keys with defaults:
 | Key | Default |
 |---|---|
 | `OPENAI_BASE_URL` | `https://api.openai.com/v1` |
-| `OPENAI_API_KEY` | `""` (empty — providers return an auth error, not an NPE) |
+| `OPENAI_API_KEY` | `""` (empty - providers return an auth error, not an NPE) |
 | `OPENAI_MODEL` | `gpt-4o-mini` |
 | `OPENAI_EMBEDDING_MODEL` | `text-embedding-3-small` |
 | `OPENAI_REASONING_MODEL` | `o4-mini` |
@@ -127,7 +127,7 @@ Reasoning test is skipped automatically when `test.reasoning.model` is blank (`@
 
 ## Vision: Always Use Base64
 
-`VisionExample.toBase64DataUrl(url)` downloads the image and converts it to `data:image/<mime>;base64,...`. Use this in tests too — local servers cannot fetch external URLs.
+`VisionExample.toBase64DataUrl(url)` downloads the image and converts it to `data:image/<mime>;base64,...`. Use this in tests too - local servers cannot fetch external URLs.
 
 ---
 
@@ -139,4 +139,4 @@ Reasoning test is skipped automatically when `test.reasoning.model` is blank (`@
 
 ## Version Constant
 
-`JavaOpenAI.JAVAOPENAI_VERSION` is a string constant used in the usage banner. Keep it in sync with `pom.xml` version manually — there is no auto-substitution at runtime.
+`JavaOpenAI.JAVAOPENAI_VERSION` is a string constant used in the usage banner. Keep it in sync with `pom.xml` version manually - there is no auto-substitution at runtime.

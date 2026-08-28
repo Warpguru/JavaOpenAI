@@ -49,7 +49,7 @@ public class ReasoningExample {
             // Reasoning models use the same chat completion endpoint.
             // The "reasoning_effort" parameter (low/medium/high) hints to the model
             // how much internal chain-of-thought to apply before answering.
-            // Not all models support this parameter — those that don't will simply ignore it.
+            // Not all models support this parameter - those that don't will simply ignore it.
             //@formatter:off
             ChatCompletionCreateParams params = ChatCompletionCreateParams
                     .builder()
@@ -73,11 +73,11 @@ public class ReasoningExample {
             logger.info("Model reasoning + answer:");
             logger.info(reply);
 
-            response.usage().ifPresent(u -> logger.info("Token usage — prompt: {}, completion: {}, total: {}", u.promptTokens(),
+            response.usage().ifPresent(u -> logger.info("Token usage - prompt: {}, completion: {}, total: {}", u.promptTokens(),
                     u.completionTokens(), u.totalTokens()));
 
         } catch (Exception e) {
-            logger.info("Reasoning request failed: {} — ensure the configured reasoning model is available.", e.getMessage());
+            logger.info("Reasoning request failed: {} - ensure the configured reasoning model is available.", e.getMessage());
             logger.error("Reasoning request failed", e);
         }
     }

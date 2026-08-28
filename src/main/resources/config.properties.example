@@ -1,5 +1,5 @@
 # =============================================================================
-# JavaOpenAI — configuration template
+# JavaOpenAI - configuration template
 # =============================================================================
 # Copy this file to config.properties (in the same directory) and fill in the
 # values for your provider. config.properties is gitignored.
@@ -10,9 +10,9 @@
 #   3. Hard-coded default
 #
 # Provider-specific ready-to-use templates:
-#   config.properties.openai  — OpenAI cloud (https://api.openai.com/v1)
-#   config.properties.ollama  — Ollama local server (http://localhost:11434/v1)
-#   config.properties.lmstudio — LM Studio local server (http://localhost:1234/v1)
+#   config.properties.openai  - OpenAI cloud (https://api.openai.com/v1)
+#   config.properties.ollama  - Ollama local server (http://localhost:11434/v1)
+#   config.properties.lmstudio - LM Studio local server (http://localhost:1234/v1)
 # =============================================================================
 
 # Base URL of the OpenAI-compatible API endpoint

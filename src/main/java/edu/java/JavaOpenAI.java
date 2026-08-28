@@ -1,5 +1,7 @@
 package edu.java;
 
+import com.openai.client.OpenAIClient;
+import edu.java.api.ClientFactory;
 import edu.java.api.Config;
 import edu.java.examples.AudioSpeechExample;
 import edu.java.examples.AudioTranscriptionExample;
@@ -10,8 +12,12 @@ import edu.java.examples.ModerationExample;
 import edu.java.examples.ReasoningExample;
 import edu.java.examples.StreamingExample;
 import edu.java.examples.VisionExample;
+import edu.java.util.ModelsDiscovery;
+import edu.java.util.ModelsDiscovery.ModelInfo;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+
+import java.util.List;
 
 /**
  * Entry point and command dispatcher for the JavaOpenAI tutorial jar.
@@ -20,27 +26,42 @@ import org.apache.logging.log4j.Logger;
  * Usage: {@code java -jar JavaOpenAI-x.y.z.jar <command>}
  *
  * <p>
+ * Running without arguments prints the configured endpoint, a live list of available models with inferred capability tags, and
+ * the command reference.
+ *
+ * <p>
  * Available commands:
  * <ul>
- * <li>{@code config} — print resolved configuration (API key masked)</li>
- * <li>{@code chat} — synchronous single-turn chat completion</li>
- * <li>{@code stream} — streaming (token-by-token) chat completion</li>
- * <li>{@code embed} — embeddings and cosine similarity</li>
- * <li>{@code vision} — multi-modal vision (image + text prompt)</li>
- * <li>{@code reason} — reasoning / chain-of-thought example</li>
- * <li>{@code tts} — text-to-speech synthesis (OpenAI cloud)</li>
- * <li>{@code stt} — speech-to-text transcription (OpenAI cloud)</li>
- * <li>{@code imagegen} — image generation / DALL·E (OpenAI cloud)</li>
- * <li>{@code moderate} — content moderation (OpenAI cloud)</li>
+ * <li>{@code config} - print resolved configuration (API key masked)</li>
+ * <li>{@code chat} - synchronous single-turn chat completion</li>
+ * <li>{@code stream} - streaming (token-by-token) chat completion</li>
+ * <li>{@code embed} - embeddings and cosine similarity</li>
+ * <li>{@code vision} - multi-modal vision (image + text prompt)</li>
+ * <li>{@code reason} - reasoning / chain-of-thought example</li>
+ * <li>{@code tts} - text-to-speech synthesis (OpenAI cloud)</li>
+ * <li>{@code stt} - speech-to-text transcription (OpenAI cloud)</li>
+ * <li>{@code imagegen} - image generation / DALL·E (OpenAI cloud)</li>
+ * <li>{@code moderate} - content moderation (OpenAI cloud)</li>
  * </ul>
  */
 public class JavaOpenAI {
 
     private static final Logger logger = LogManager.getLogger(JavaOpenAI.class);
-    
-    /** JavaOpenAI version (keep in sync with pom.xml). */
-    public static final String JAVAOPENAI_VERSION = "x.y.z";
 
+    /** JavaOpenAI version (keep in sync with pom.xml). */
+    public static final String JAVAOPENAI_VERSION = "1.0.0";
+
+    /**
+     * Column width used when formatting the model ID column in {@link #formatModelLine(ModelInfo)}. Adjust if model IDs at your
+     * endpoint are longer than this value.
+     */
+    private static final int MODEL_ID_COLUMN_WIDTH = 45;
+
+    /**
+     * Main entry point.
+     * 
+     * @param args
+     */
     public static void main(String[] args) {
         new JavaOpenAI().process(args);
     }
@@ -88,8 +109,37 @@ public class JavaOpenAI {
         logger.info("Moderation model : {}", Config.getModerationModel());
     }
 
+    /**
+     * Prints a startup banner containing:
+     * <ol>
+     * <li>The configured endpoint URL and masked API key.</li>
+     * <li>A live list of all models available at that endpoint, each annotated with inferred capability tags (e.g.
+     * {@code chat}, {@code vision}, {@code stt}).</li>
+     * <li>The standard command reference.</li>
+     * </ol>
+     *
+     * <p>
+     * If the endpoint is unreachable or does not support the models list API, the model section shows a single "could not
+     * retrieve" notice and the command list is still printed.
+     */
     private void printUsage() {
-        logger.info("Usage: java -jar JavaOpenAI-{}.jar <command>", JAVAOPENAI_VERSION);
+        logger.info("JavaOpenAI {}  OpenAI API tutorial", JAVAOPENAI_VERSION);
+        logger.info("Endpoint : {}", Config.getBaseUrl());
+        logger.info("API Key  : {}", maskApiKey(Config.getApiKey()));
+        logger.info("");
+
+        OpenAIClient client = ClientFactory.create();
+        List<ModelInfo> models = new ModelsDiscovery().listModels(client);
+
+        if (models.isEmpty()) {
+            logger.info("Available models: (could not retrieve - check endpoint and API key)");
+        } else {
+            logger.info("Available models ({}):", models.size());
+            for (ModelInfo m : models) {
+                logger.info("  {}", formatModelLine(m));
+            }
+        }
+
         logger.info("");
         logger.info("Available commands:");
         logger.info("  config   Print resolved configuration (API key masked)");
@@ -100,8 +150,20 @@ public class JavaOpenAI {
         logger.info("  reason   Reasoning / chain-of-thought example");
         logger.info("  tts      Text-to-speech synthesis");
         logger.info("  stt      Speech-to-text transcription");
-        logger.info("  imagegen Image generation (e.g. DALL·E)");
+        logger.info("  imagegen Image generation (e.g. DALL-E)");
         logger.info("  moderate Content moderation");
+    }
+
+    /**
+     * Formats a single model line as a two-column string: the model ID left-padded to {@value #MODEL_ID_COLUMN_WIDTH}
+     * characters, followed by the capability tags in brackets.
+     *
+     * @param m the model info to format
+     * @return formatted line, e.g. {@code "  llama3.2-vision:latest        [chat, vision]"}
+     */
+    private String formatModelLine(ModelInfo m) {
+        String tags = "[" + String.join(", ", m.capabilities()) + "]";
+        return String.format("%-" + MODEL_ID_COLUMN_WIDTH + "s %s", m.id(), tags);
     }
 
     // -------------------------------------------------------------------------
@@ -111,6 +173,9 @@ public class JavaOpenAI {
     /**
      * Masks an API key for safe display: shows the first 5 characters followed by {@code ****}, or just {@code ****} if the key
      * is shorter than 5 characters or not set.
+     *
+     * @param key the raw API key, may be {@code null} or empty
+     * @return the masked key string, never {@code null}
      */
     String maskApiKey(String key) {
         if (key == null || key.isEmpty()) {

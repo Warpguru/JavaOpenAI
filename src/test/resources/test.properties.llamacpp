@@ -1,0 +1,13 @@
+# Example configuration for a local llama.cpp server
+# Default llama.cpp OpenAI-compatible endpoint: http://localhost:8080/v1
+# Start the server with: llama-server --model <model.gguf> --port 8080
+
+test.base.url=http://localhost:8080/v1
+test.api.key=local
+# Set to the filename (without path) of the GGUF model you loaded, e.g. llama-3.2-3b.gguf
+test.model=
+test.vision.model=
+test.reasoning.model=
+test.audio.enabled=false
+test.image.generation.enabled=false
+test.moderation.enabled=false

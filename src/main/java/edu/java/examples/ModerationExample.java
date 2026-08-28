@@ -29,7 +29,7 @@ public class ModerationExample {
 
     private static final Logger logger = LogManager.getLogger(ModerationExample.class);
 
-    /** Sample inputs submitted to the moderation endpoint — one benign, one mildly flagged. */
+    /** Sample inputs submitted to the moderation endpoint - one benign, one mildly flagged. */
     private static final String[] SAMPLE_INPUTS = {
             "I love sunny days and going for walks.",
             "I am feeling very frustrated and want to punch a wall."
@@ -39,7 +39,7 @@ public class ModerationExample {
      * Runs the moderation example.
      *
      * <p>
-     * Submits two sample sentences — one benign and one mildly negative — to the moderation endpoint configured by
+     * Submits two sample sentences - one benign and one mildly negative - to the moderation endpoint configured by
      * {@code OPENAI_MODERATION_MODEL} and prints which content categories were flagged. Demonstrates how to integrate
      * content-safety checks into an application.
      *
@@ -90,7 +90,7 @@ public class ModerationExample {
             }
 
         } catch (Exception e) {
-            logger.info("Moderation request failed: {} — this endpoint requires OpenAI cloud access.", e.getMessage());
+            logger.info("Moderation request failed: {} - this endpoint requires OpenAI cloud access.", e.getMessage());
             logger.error("Moderation request failed", e);
         }
     }

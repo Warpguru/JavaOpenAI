@@ -1,0 +1,21 @@
+# Example configuration for a local Ollama server
+# Default Ollama OpenAI-compatible endpoint: http://localhost:11434/v1
+# Pull models with: ollama pull <model>  (e.g. ollama pull llama3.2:3b)
+# List available models with: ollama list
+
+test.base.url=http://localhost:11434/v1
+# Ollama does not require authentication — any non-empty string works
+test.api.key=local
+# A general-purpose chat/completion/embedding model available locally
+# Examples: llama3.2:3b  gemma3:1b  mistral:latest  granite3.3:8b
+test.model=llama3.2:3b
+# A vision-capable model available locally. Leave blank to skip the vision test.
+# Examples: llama3.2-vision:latest  moondream:latest
+test.vision.model=llama3.2-vision:latest
+# A reasoning/thinking model. Leave blank to skip the reasoning test.
+# Examples: qwq:latest  deepseek-r1:latest
+test.reasoning.model=
+# Ollama does not support audio, image generation or moderation — leave these false
+test.audio.enabled=false
+test.image.generation.enabled=false
+test.moderation.enabled=false

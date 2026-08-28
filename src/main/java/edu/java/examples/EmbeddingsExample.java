@@ -53,7 +53,7 @@ public class EmbeddingsExample {
             logger.info("Dimensions : {}", vecA.length);
             logger.info("Cosine similarity : {}", String.format("%.6f", similarity));
         } catch (Exception e) {
-            logger.info("Embeddings request failed: {} — the configured model or local server may not support embeddings.",
+            logger.info("Embeddings request failed: {} - the configured model or local server may not support embeddings.",
                     e.getMessage());
             logger.error("Embeddings request failed", e);
         }

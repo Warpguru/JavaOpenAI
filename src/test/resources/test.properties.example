@@ -3,12 +3,12 @@
 # USAGE:
 #   Copy this file to src/test/resources/test.properties and fill in the values
 #   for the LLM API provider you want to test against.
-#   This file (test.properties) is gitignored — never commit it.
+#   This file (test.properties) is gitignored - never commit it.
 #
 # SUPPORTED PROVIDERS (examples):
-#   Ollama (local):     http://localhost:11434/v1   — any non-empty string for api.key
-#   LM Studio (local):  http://localhost:1234/v1    — any non-empty string for api.key
-#   OpenAI (cloud):     https://api.openai.com/v1   — your real sk-... key
+#   Ollama (local):     http://localhost:11434/v1   - any non-empty string for api.key
+#   LM Studio (local):  http://localhost:1234/v1    - any non-empty string for api.key
+#   OpenAI (cloud):     https://api.openai.com/v1   - your real sk-... key
 #   Any OpenAI-compatible provider: set the appropriate base URL and key
 #
 # NOTE: The models listed below are just examples. Set them to whatever models
@@ -16,7 +16,7 @@
 #
 # OPTIONAL CAPABILITIES:
 #   Keys left blank or flags left false cause the corresponding test to be skipped
-#   automatically — no test failures result from a missing or unsupported capability.
+#   automatically - no test failures result from a missing or unsupported capability.
 
 # Base URL of the OpenAI-compatible API endpoint to test against
 test.base.url=http://localhost:11434/v1
@@ -38,11 +38,11 @@ test.vision.model=
 # Examples: qwq:latest  o1-mini  o3-mini
 test.reasoning.model=
 
-# Set to true if the provider supports audio (TTS/STT) — OpenAI cloud only
+# Set to true if the provider supports audio (TTS/STT) - OpenAI cloud only
 test.audio.enabled=false
 
-# Set to true if the provider supports image generation (DALL-E) — OpenAI cloud only
+# Set to true if the provider supports image generation (DALL-E) - OpenAI cloud only
 test.image.generation.enabled=false
 
-# Set to true if the provider supports the moderation endpoint — OpenAI cloud only
+# Set to true if the provider supports the moderation endpoint - OpenAI cloud only
 test.moderation.enabled=false

@@ -102,7 +102,7 @@ public class VisionExample {
             logger.info("Model response:");
             logger.info(reply);
         } catch (Exception e) {
-            logger.info("Vision request failed: {} — ensure the configured model supports vision input.", e.getMessage());
+            logger.info("Vision request failed: {} - ensure the configured model supports vision input.", e.getMessage());
             logger.error("Vision request failed", e);
         }
     }

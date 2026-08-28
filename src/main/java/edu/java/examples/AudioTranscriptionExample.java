@@ -73,7 +73,7 @@ public class AudioTranscriptionExample {
             logger.info("Transcript: {}", transcript);
 
         } catch (Exception e) {
-            logger.info("Transcription request failed: {} — this endpoint requires OpenAI cloud access.", e.getMessage());
+            logger.info("Transcription request failed: {} - this endpoint requires OpenAI cloud access.", e.getMessage());
             logger.error("Transcription request failed", e);
         } finally {
             if (tmpFile != null) {

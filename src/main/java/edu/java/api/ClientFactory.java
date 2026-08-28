@@ -38,7 +38,7 @@ public class ClientFactory {
             builder.apiKey(apiKey);
         } else {
             // SDK requires a non-null key; use a placeholder for local servers
-            logger.warn("OPENAI_API_KEY is not set — using placeholder key (fine for local servers)");
+            logger.warn("OPENAI_API_KEY is not set - using placeholder key (fine for local servers)");
             builder.apiKey("undefined");
         }
 

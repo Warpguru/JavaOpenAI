@@ -35,19 +35,20 @@ public class TestConfig {
     private static final Properties PROPS = load();
 
     /**
-     * Hidden constructor — all members are static.
+     * Hidden constructor - all members are static.
      */
     private TestConfig() {
     }
 
     /**
      * Base URL of the OpenAI-compatible endpoint under test.
-     * Defaults to {@code http://localhost:11434/v1} (Ollama default port).
+     * Returns an empty string when {@code test.base.url} is not set or is blank, which causes
+     * all network-dependent tests to be skipped via {@code @EnabledIf("serverConfigured")}.
      *
-     * @return base URL string, never {@code null}
+     * @return base URL string, or empty string if not configured
      */
     public static String baseUrl() {
-        return PROPS.getProperty("test.base.url", "http://localhost:11434/v1");
+        return PROPS.getProperty("test.base.url", "").trim();
     }
 
     /**
@@ -72,12 +73,12 @@ public class TestConfig {
 
     /**
      * Vision-capable model used by the vision test. Returns an empty string when
-     * {@code test.vision.model} is not set — the vision test checks this value via
+     * {@code test.vision.model} is not set - the vision test checks this value via
      * {@code @EnabledIf("visionModelConfigured")} and skips automatically.
      *
      * <p>
      * Set {@code test.vision.model} explicitly in {@code test.properties} even when the same
-     * model handles both chat and vision — this makes the capability opt-in and consistent
+     * model handles both chat and vision - this makes the capability opt-in and consistent
      * with how reasoning, audio, image generation and moderation are handled.
      *
      * @return model identifier string, or empty string if not configured
@@ -88,7 +89,7 @@ public class TestConfig {
 
     /**
      * Reasoning model (o1/o3/QwQ-style). Returns an empty string when
-     * {@code test.reasoning.model} is not set — the reasoning test checks this value via
+     * {@code test.reasoning.model} is not set - the reasoning test checks this value via
      * {@code @EnabledIf("reasoningModelConfigured")} and skips automatically.
      *
      * @return model identifier string, or empty string if not configured
@@ -146,7 +147,7 @@ public class TestConfig {
                 p.load(is);
                 logger.debug("Loaded {}", FILE_TEST_PROPERTIES);
             } else {
-                logger.warn("{} not found on classpath — using defaults. "
+                logger.warn("{} not found on classpath - using defaults. "
                         + "Copy test.properties.example to test.properties to configure.", FILE_TEST_PROPERTIES);
             }
         } catch (IOException e) {

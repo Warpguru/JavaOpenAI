@@ -2,7 +2,7 @@
 
 A hands-on Java 21 tutorial for the [OpenAI API](https://platform.openai.com/docs/api-reference), using the official first-party SDK [`com.openai:openai-java`](https://github.com/openai/openai-java).
 
-Covers the full API surface — **chat**, **streaming**, **embeddings**, **vision**, **reasoning**, **text-to-speech**, **speech-to-text**, **image generation**, and **content moderation** — working against both the OpenAI cloud and any OpenAI-compatible local LLM server via a configurable base URL.
+Covers the full API surface - **chat**, **streaming**, **embeddings**, **vision**, **reasoning**, **text-to-speech**, **speech-to-text**, **image generation**, and **content moderation** - working against both the OpenAI cloud and any OpenAI-compatible local LLM server via a configurable base URL.
 
 ---
 
@@ -20,21 +20,21 @@ Covers the full API surface — **chat**, **streaming**, **embeddings**, **visio
 | `imagegen` | Images (DALL·E / image generation) | ❌ not supported locally | `gpt-image-1` |
 | `moderate` | Moderations (content classification) | ❌ not supported locally | `omni-moderation-latest` |
 
-> Pull a local model with e.g. `ollama pull llama3.2:3b` — then set `OPENAI_MODEL=llama3.2:3b` and point `OPENAI_BASE_URL` at your server. For cloud commands, an OpenAI API key is required.
+> Pull a local model with e.g. `ollama pull llama3.2:3b` - then set `OPENAI_MODEL=llama3.2:3b` and point `OPENAI_BASE_URL` at your server. For cloud commands, an OpenAI API key is required.
 
 ---
 
 ## Prerequisites
 
-- **Java 21** — [download](https://adoptium.net/temurin/releases/?version=21) or install via your package manager
-- **Maven 3.9+** — [download](https://maven.apache.org/download.cgi)
+- **Java 21** - [download](https://adoptium.net/temurin/releases/?version=21) or install via your package manager
+- **Maven 3.9+** - [download](https://maven.apache.org/download.cgi)
 
 > On this machine, Java and Maven can be added to the `PATH` for the current session by running:
 > ```cmd
 > D:\Development\SetupEnvJava21.cmd
 > D:\Development\SetupEnvMaven.cmd
 > ```
-> These are local convenience scripts — they are not required on other machines where Java 21 and Maven are already on the `PATH`.
+> These are local convenience scripts - they are not required on other machines where Java 21 and Maven are already on the `PATH`.
 
 ---
 
@@ -91,7 +91,7 @@ The uber-jar is produced at `target/JavaOpenAI-x.y.z.jar`. It contains all depen
 
 ## Setting Environment Variables
 
-Configuration can be supplied via environment variables instead of (or in addition to) `config.properties`. Environment variables take priority over the properties file, so no rebuild is needed when switching providers or models — just set the variables in your shell and run the jar directly.
+Configuration can be supplied via environment variables instead of (or in addition to) `config.properties`. Environment variables take priority over the properties file, so no rebuild is needed when switching providers or models - just set the variables in your shell and run the jar directly.
 
 ### Windows (cmd)
 
@@ -108,7 +108,7 @@ set OPENAI_MODERATION_MODEL=omni-moderation-latest
 java -jar target/JavaOpenAI-x.y.z.jar <command>
 ```
 
-> `set` is session-scoped — variables are only active for the current `cmd` window.
+> `set` is session-scoped - variables are only active for the current `cmd` window.
 
 ### Windows (PowerShell)
 
@@ -142,7 +142,7 @@ java -jar target/JavaOpenAI-x.y.z.jar <command>
 
 ---
 
-### `config` — Show resolved settings
+### `config` - Show resolved settings
 
 ```cmd
 java -jar target/JavaOpenAI-x.y.z.jar config
@@ -152,13 +152,13 @@ Prints all resolved configuration values (API key masked). Run this first to ver
 
 ---
 
-### `chat` — Synchronous chat completion
+### `chat` - Synchronous chat completion
 
 ```cmd
 java -jar target/JavaOpenAI-x.y.z.jar chat
 ```
 
-**What it does:** Sends a hardcoded question ("What is the capital of France?") to the model and prints the reply. Uses the blocking (synchronous) Chat Completions API — the full response arrives in one go.
+**What it does:** Sends a hardcoded question ("What is the capital of France?") to the model and prints the reply. Uses the blocking (synchronous) Chat Completions API - the full response arrives in one go.
 
 ```mermaid
 sequenceDiagram
@@ -169,11 +169,11 @@ sequenceDiagram
     App->>App: Print reply + log token usage
 ```
 
-> Models: set `OPENAI_MODEL` — e.g. `llama3.2:3b` locally or `gpt-4o-mini` on OpenAI.
+> Models: set `OPENAI_MODEL` - e.g. `llama3.2:3b` locally or `gpt-4o-mini` on OpenAI.
 
 ---
 
-### `stream` — Streaming chat completion
+### `stream` - Streaming chat completion
 
 ```cmd
 java -jar target/JavaOpenAI-x.y.z.jar stream
@@ -193,11 +193,11 @@ sequenceDiagram
     App->>App: Print assembled reply
 ```
 
-> Uses `StreamResponse<ChatCompletionChunk>` — iterable with a standard for-each.
+> Uses `StreamResponse<ChatCompletionChunk>` - iterable with a standard for-each.
 
 ---
 
-### `embed` — Embeddings and cosine similarity
+### `embed` - Embeddings and cosine similarity
 
 ```cmd
 java -jar target/JavaOpenAI-x.y.z.jar embed
@@ -214,18 +214,18 @@ graph LR
     VA & VC --> sim_AC["sim(A,C) ≈ 0.61 ❌ unrelated"]
 ```
 
-> Set `OPENAI_EMBEDDING_MODEL` — e.g. `llama3.2:3b` locally or `text-embedding-3-small` on OpenAI.
+> Set `OPENAI_EMBEDDING_MODEL` - e.g. `llama3.2:3b` locally or `text-embedding-3-small` on OpenAI.
 
 ---
 
-### `vision` — Multi-modal image + text
+### `vision` - Multi-modal image + text
 
 ```cmd
 java -jar target/JavaOpenAI-x.y.z.jar vision
 java -jar target/JavaOpenAI-x.y.z.jar vision https://example.com/image.jpg
 ```
 
-**What it does:** Downloads an image (default: a public Wikipedia PNG), encodes it as a Base64 data URL, and sends it alongside a text prompt asking the model to describe what it sees. Using Base64 ensures local servers — which cannot fetch external URLs themselves — also work.
+**What it does:** Downloads an image (default: a public Wikipedia PNG), encodes it as a Base64 data URL, and sends it alongside a text prompt asking the model to describe what it sees. Using Base64 ensures local servers - which cannot fetch external URLs themselves - also work.
 
 ```mermaid
 sequenceDiagram
@@ -239,11 +239,11 @@ sequenceDiagram
     API-->>App: Description of the image
 ```
 
-> Set `OPENAI_MODEL` to a vision-capable model — e.g. `llama3.2-vision:latest` or `gpt-4o-mini`.
+> Set `OPENAI_MODEL` to a vision-capable model - e.g. `llama3.2-vision:latest` or `gpt-4o-mini`.
 
 ---
 
-### `reason` — Reasoning / chain-of-thought
+### `reason` - Reasoning / chain-of-thought
 
 ```cmd
 java -jar target/JavaOpenAI-x.y.z.jar reason
@@ -258,11 +258,11 @@ graph TD
     T --> A[Final answer: 9]
 ```
 
-> Set `OPENAI_REASONING_MODEL` — e.g. `qwq:latest` locally or `o4-mini` on OpenAI. Defaults to `o4-mini` if not set.
+> Set `OPENAI_REASONING_MODEL` - e.g. `qwq:latest` locally or `o4-mini` on OpenAI. Defaults to `o4-mini` if not set.
 
 ---
 
-### `tts` — Text-to-speech
+### `tts` - Text-to-speech
 
 ```cmd
 java -jar target/JavaOpenAI-x.y.z.jar tts
@@ -283,7 +283,7 @@ sequenceDiagram
 
 ---
 
-### `stt` — Speech-to-text (Whisper)
+### `stt` - Speech-to-text (Whisper)
 
 ```cmd
 java -jar target/JavaOpenAI-x.y.z.jar stt
@@ -307,7 +307,7 @@ sequenceDiagram
 
 ---
 
-### `imagegen` — Image generation (DALL·E)
+### `imagegen` - Image generation (DALL·E)
 
 ```cmd
 java -jar target/JavaOpenAI-x.y.z.jar imagegen
@@ -328,7 +328,7 @@ sequenceDiagram
 
 ---
 
-### `moderate` — Content moderation
+### `moderate` - Content moderation
 
 ```cmd
 java -jar target/JavaOpenAI-x.y.z.jar moderate
@@ -427,7 +427,7 @@ Then edit `config.properties` and replace `sk-...` with your real API key from [
 
 ### Other OpenAI-compatible cloud providers
 
-Any provider that exposes an OpenAI-compatible REST API works with this project — just point `OPENAI_BASE_URL` at their endpoint and set the appropriate `OPENAI_API_KEY`.
+Any provider that exposes an OpenAI-compatible REST API works with this project - just point `OPENAI_BASE_URL` at their endpoint and set the appropriate `OPENAI_API_KEY`.
 
 | Provider | Base URL | Notes |
 |---|---|---|
@@ -445,7 +445,7 @@ For any of these, create a `config.properties` based on `config.properties.examp
 
 ```
 src/main/java/edu/java/
-├── JavaOpenAI.java                      # Entry point — command dispatcher
+├── JavaOpenAI.java                      # Entry point - command dispatcher
 ├── api/
 │   ├── Config.java                      # Config loader (env vars → config.properties → defaults)
 │   └── ClientFactory.java               # Builds the OpenAIClient
