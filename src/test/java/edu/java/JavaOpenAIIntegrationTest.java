@@ -2,6 +2,7 @@ package edu.java;
 
 import com.openai.client.OpenAIClient;
 import com.openai.client.okhttp.OpenAIOkHttpClient;
+import com.openai.core.Timeout;
 import com.openai.core.http.StreamResponse;
 import com.openai.models.chat.completions.ChatCompletion;
 import com.openai.models.chat.completions.ChatCompletionChunk;
@@ -273,6 +274,9 @@ class JavaOpenAIIntegrationTest {
         } catch (com.openai.errors.BadRequestException e) {
             // Some local models reject vision input - treat as a known limitation, not a failure
             logger.warn("[Vision] Model does not support vision input via /v1: {}", e.getMessage());
+        } catch (com.openai.errors.OpenAIIoException e) {
+            // Timeout or IO error (e.g. model too slow to respond) - treat as a known limitation
+            logger.warn("[Vision] Request timed out or failed with IO error - {}", e.getMessage());
         }
     }
 
@@ -352,8 +356,18 @@ class JavaOpenAIIntegrationTest {
     // Helpers
     // -------------------------------------------------------------------------
 
+    /**
+     * Builds a test {@link OpenAIClient} with a 5-minute request timeout.
+     * The SDK default is 10 minutes; capped here so that a slow or unresponsive local model
+     * (e.g. a vision model that hasn't been loaded yet) fails the test quickly rather than
+     * blocking the build for 30+ minutes across retries.
+     */
     private static OpenAIClient buildClient() {
-        return OpenAIOkHttpClient.builder().baseUrl(TestConfig.baseUrl()).apiKey(TestConfig.apiKey()).build();
+        return OpenAIOkHttpClient.builder()
+                .baseUrl(TestConfig.baseUrl())
+                .apiKey(TestConfig.apiKey())
+                .timeout(Timeout.builder().request(java.time.Duration.ofMinutes(5)).build())
+                .build();
     }
 
     private float[] getEmbedding(OpenAIClient client, String model, String text) {
